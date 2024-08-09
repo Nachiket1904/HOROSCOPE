@@ -16,6 +16,10 @@ from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 import time
 import os
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from utility.utility_function import scrape_content,full_screenshot_with_scroll,get_farthest_points,map_to_value
 
 app = Flask(__name__)
@@ -43,8 +47,13 @@ def generate_output():
         chrome_options.add_argument("--window-size=1920,1080")
 
         # Use Selenium with headless Chrome
-        driver = webdriver.Chrome(options=chrome_options)
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.get(url)
+
+        # # Use Selenium with headless Chrome
+        # driver = webdriver.Chrome(options=chrome_options)
+        # driver.get(url)
         
         # Example: Capture a full screenshot and process it
         screenshot_path = Path("scrolled_page.png")
