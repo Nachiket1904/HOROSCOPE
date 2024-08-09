@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Output Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        h2 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generated Results</h1>
+    <form id="form">
+        <input type="number" name="birth_day" placeholder="Birth Day">
+        <input type="number" name="birth_month" placeholder="Birth Month">
+        <input type="number" name="birth_year" placeholder="Birth Year">
+        <input type="number" name="birth_hour" placeholder="Birth Hour">
+        <input type="text" name="gender" placeholder="Gender">
+        <button type="submit">Generate</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+            
+            fetch('/generate_output', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                let outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = `
+                    <h2>五行</h2>
+                    <table>
+                        <tr><th>Element</th><th>Value</th></tr>
+                        <tr><td>木</td><td>${data['五行']['木']}</td></tr>
+                        <tr><td>火</td><td>${data['五行']['火']}</td></tr>
+                        <tr><td>土</td><td>${data['五行']['土']}</td></tr>
+                        <tr><td>金</td><td>${data['五行']['金']}</td></tr>
+                        <tr><td>水</td><td>${data['五行']['水']}</td></tr>
+                    </table>
+                    <h2>蔵干含む</h2>
+                    <table>
+                        <tr><th>Element</th><th>Value</th></tr>
+                        <tr><td>木</td><td>${data['蔵干含む']['木']}</td></tr>
+                        <tr><td>火</td><td>${data['蔵干含む']['火']}</td></tr>
+                        <tr><td>土</td><td>${data['蔵干含む']['土']}</td></tr>
+                        <tr><td>金</td><td>${data['蔵干含む']['金']}</td></tr>
+                        <tr><td>水</td><td>${data['蔵干含む']['水']}</td></tr>
+                    </table>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
