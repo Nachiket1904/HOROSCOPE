@@ -1,22 +1,14 @@
+version: '3.8'
 services:
-  - type: web
-    name: flask-app
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.9.0
-    buildCommand: docker-compose build
-    startCommand: docker-compose up
-  - type: web
-    name: chrome
-    env: docker
-    image: selenium/standalone-chrome
-    envVars:
-      - key: SCREEN_WIDTH
-        value: 1280
-      - key: SCREEN_HEIGHT
-        value: 1024
-      - key: SCREEN_DEPTH
-        value: 24
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - .:/app
+volumes:
+  chrome_data:
