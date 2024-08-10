@@ -39,4 +39,6 @@ ENV FLASK_RUN_HOST=0.0.0.0
 ENV PATH="/usr/lib/chromium-browser:${PATH}"
 
 # Run app.py when the container launches
-CMD ["flask", "run"]
+# CMD ["flask", "run"]
+# Run Gunicorn when the container launches
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "--timeout", "360", "app:app"]
