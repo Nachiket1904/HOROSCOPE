@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - DISPLAY=:99
+    volumes:
+      - .:/app
+    depends_on:
+      - chrome
+
+  chrome:
+    image: selenium/standalone-chrome
+    environment:
+      - SCREEN_WIDTH=1280
+      - SCREEN_HEIGHT=1024
+      - SCREEN_DEPTH=24
+    shm_size: 2g
+
+volumes:
+  chrome_data:

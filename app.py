@@ -18,14 +18,17 @@ import time
 import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service 
+# from webdriver_manager.core.utils import ChromeType
+from webdriver_manager.core.os_manager import ChromeType
 from utility.utility_function import scrape_content,full_screenshot_with_scroll,get_farthest_points,map_to_value
 
 app = Flask(__name__)
 
 @app.route('/generate_output', methods=['POST']) # type: ignore
 def generate_output():
+    driver = None
     try:
         # Collect data from the request
         data = request.get_json()
@@ -39,20 +42,17 @@ def generate_output():
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
 
-        # Set up Chrome options for headless mode
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
-        # Use Selenium with headless Chrome
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
+        chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+        driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
         driver.get(url)
 
-        # # Use Selenium with headless Chrome
-        # driver = webdriver.Chrome(options=chrome_options)
+        # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=chrome_options)
         # driver.get(url)
         
         # Example: Capture a full screenshot and process it
@@ -105,10 +105,15 @@ def generate_output():
        
         # Combine the two dictionaries
         result = {**五行, **蔵干含む}
+    
+    except Exception as e:
+        # Log the exception for debugging
+        print(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
 
     finally:
-        # Clean up: Close the browser and delete images
-        driver.quit()
+        if driver is not None:
+            driver.quit()
         
         # Delete the images
         if os.path.exists("scrolled_page.png"):
@@ -126,3 +131,13 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+# echo "# HOROSCOPE" >> README.md
+# git init
+# git add README.md
+# git commit -m "first commit"
+# git branch -M main
+# git remote add origin https://github.com/Nachiket1904/HOROSCOPE.git
+# git push -u origin main
