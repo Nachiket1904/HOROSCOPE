@@ -40,9 +40,6 @@ def generate_output():
         # Generate the URL
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
-
-
-
         
         # Set up Chrome options
         chrome_options = Options()
@@ -50,7 +47,11 @@ def generate_output():
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.binary_location = os.environ.get("CHROME_BIN")
+        
+        # Handle Chrome binary location
+        chrome_bin = os.environ.get('CHROME_BIN')
+        if chrome_bin:
+            chrome_options.binary_location = chrome_bin
 
         # Update ChromeDriver with the correct version
         chrome_service = Service(ChromeDriverManager().install())
