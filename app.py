@@ -50,6 +50,7 @@ def generate_output():
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.binary_location = os.environ.get("CHROME_BIN")
 
         # Update ChromeDriver with the correct version
         chrome_service = Service(ChromeDriverManager().install())
