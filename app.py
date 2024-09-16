@@ -16,12 +16,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 from PIL import Image
 import time
 import os
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service 
-# from webdriver_manager.core.utils import ChromeType
-from webdriver_manager.core.os_manager import ChromeType
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium import webdriver
+
 from utility.utility_function import scrape_content,full_screenshot_with_scroll,get_farthest_points,map_to_value
 
 app = Flask(__name__)
@@ -42,18 +41,26 @@ def generate_output():
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
 
+
+
+        
+        # Set up Chrome options
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        chrome_service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-        driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
-        driver.get(url)
+        # Update ChromeDriver with the correct version
+        chrome_service = Service(ChromeDriverManager().install())
 
-        # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=chrome_options)
-        # driver.get(url)
+        # Create WebDriver instance
+        driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+
+
+
+        # driver = webdriver.Chrome(service=chrome_service(ChromeDriverManager().install()),options=chrome_options)
+        driver.get(url)
         
         # Example: Capture a full screenshot and process it
         screenshot_path = Path("scrolled_page.png")
@@ -131,4 +138,3 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
