@@ -40,6 +40,7 @@ def generate_output():
         # Generate the URL
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
+        print(url)
 
        # Set up Chrome options
         chrome_options = ChromeOptions()
