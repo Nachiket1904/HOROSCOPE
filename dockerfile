@@ -29,11 +29,9 @@ COPY . .
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Define environment variable
+# Define environment variables
 ENV FLASK_APP=app.py
-
-# Set the Firefox binary path
-ENV FIREFOX_BIN=/usr/bin/firefox-esr
+ENV FIREFOX_BINARY=/usr/bin/firefox-esr
 
 # Run app.py when the container launches
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
