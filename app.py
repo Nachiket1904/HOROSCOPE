@@ -36,12 +36,12 @@ def generate_output():
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
 
-        # Set up Firefox options
+        #Set up Firefox options
         firefox_options = FirefoxOptions()
         firefox_options.add_argument("--headless")
         
         # Set the Firefox binary path
-        firefox_binary = os.environ.get('FIREFOX_BINARY', '/usr/bin/firefox-esr')
+        firefox_binary = os.environ.get('FIREFOX_BINARY', '/usr/bin/firefox')
         firefox_options.binary_location = firefox_binary
 
         # Set up Firefox service
