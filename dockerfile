@@ -1,20 +1,28 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Use an official Ubuntu runtime as a parent image
+FROM ubuntu:20.04
+
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies and Firefox
+# Install system dependencies, Python, and Firefox
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
-    firefox-esr \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    && add-apt-repository ppa:mozillateam/ppa \
+    && apt-get update \
+    && apt-get install -y firefox \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Install GeckoDriver
 RUN GECKO_DRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep tag_name | cut -d '"' -f 4) \
@@ -31,7 +39,7 @@ EXPOSE 5000
 
 # Define environment variables
 ENV FLASK_APP=app.py
-ENV FIREFOX_BINARY=/usr/bin/firefox-esr
+ENV FIREFOX_BINARY=/usr/bin/firefox
 
 # Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=5000"]
