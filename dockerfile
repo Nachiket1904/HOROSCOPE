@@ -20,16 +20,23 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install ChromeDriver
+RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
+    && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
+    && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
+    && rm /tmp/chromedriver.zip
+
 # Copy the current directory contents into the container at /app
 COPY . .
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Define environment variables
+# Define environment variable
 ENV FLASK_APP=app.py
+
+# Set the Chrome binary path
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 
 # Run app.py when the container launches
-CMD flask run --host=0.0.0.0 --port=5000
-
+CMD ["flask", "run", "--host=0.0.0.0"]
