@@ -15,6 +15,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+import os
 
 from utility.utility_function import scrape_content, full_screenshot_with_scroll, get_farthest_points, map_to_value
 
@@ -36,22 +41,19 @@ def generate_output():
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
 
-        #Set up Firefox options
-        firefox_options = FirefoxOptions()
-        firefox_options.add_argument("--headless")
-        
-        # Set the Firefox binary path
-        firefox_binary = os.environ.get('FIREFOX_BINARY', '/usr/bin/firefox')
-        firefox_options.binary_location = firefox_binary
+       # Set up Chrome options
+        chrome_options = ChromeOptions()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
 
-        # Set up Firefox service
-        firefox_service = FirefoxService(GeckoDriverManager().install())
+        # Set up Chrome service
+        chrome_service = ChromeService(ChromeDriverManager().install())
 
         # Create WebDriver instance
-        driver = webdriver.Firefox(service=firefox_service, options=firefox_options)
+        driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
         driver.get(url)
-        
-        
         
         # Example: Capture a full screenshot and process it
         screenshot_path = Path("scrolled_page.png")
