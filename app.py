@@ -49,7 +49,7 @@ def generate_output():
         chrome_options.add_argument("--disable-dev-shm-usage")
 
         # Set up Chrome service
-        chrome_service = ChromeService(ChromeDriverManager().install())
+        chrome_service = ChromeService(executable_path="/usr/local/bin/chromedriver")
 
         # Create WebDriver instance
         driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
