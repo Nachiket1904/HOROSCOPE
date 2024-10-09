@@ -4,15 +4,11 @@ FROM python:3.9-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies and Chrome
+# Install system dependencies and Firefox
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
-    unzip \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
+    firefox-esr \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -20,11 +16,12 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install ChromeDriver
-RUN CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
-    && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
-    && unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip
+# Install GeckoDriver
+RUN GECKO_DRIVER_VERSION=$(curl -sS https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep tag_name | cut -d '"' -f 4) \
+    && wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/$GECKO_DRIVER_VERSION/geckodriver-$GECKO_DRIVER_VERSION-linux64.tar.gz \
+    && tar -C /usr/local/bin -zxf /tmp/geckodriver.tar.gz \
+    && rm /tmp/geckodriver.tar.gz \
+    && chmod +x /usr/local/bin/geckodriver
 
 # Copy the current directory contents into the container at /app
 COPY . .
@@ -35,8 +32,8 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP=app.py
 
-# Set the Chrome binary path
-ENV CHROME_BIN=/usr/bin/google-chrome-stable
+# Set the Firefox binary path
+ENV FIREFOX_BIN=/usr/bin/firefox-esr
 
 # Run app.py when the container launches
-CMD ["flask", "run", "--host=127.0.0.1:5000"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
