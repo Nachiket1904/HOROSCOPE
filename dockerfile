@@ -39,4 +39,4 @@ ENV FLASK_APP=app.py
 ENV CHROME_BIN=/usr/bin/google-chrome-stable
 
 # Run app.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=127.0.0.1:5000"]
