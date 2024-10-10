@@ -8,17 +8,9 @@ from pathlib import Path
 import base64
 import requests
 from bs4 import BeautifulSoup
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-import time
-import os
-from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
 import os
 
 from utility.utility_function import scrape_content, full_screenshot_with_scroll, get_farthest_points, map_to_value
@@ -42,7 +34,7 @@ def generate_output():
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
         print(url)
 
-       # Set up Chrome options
+        # Set up Chrome options
         chrome_options = ChromeOptions()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
@@ -50,7 +42,8 @@ def generate_output():
         chrome_options.add_argument("--disable-dev-shm-usage")
 
         # Set up Chrome service
-        chrome_service = ChromeService(executable_path="/usr/local/bin/chromedriver")
+        chromedriver_path = os.path.join(os.getcwd(), 'chromedriver_win32', 'chromedriver.exe')
+        chrome_service = ChromeService(executable_path=chromedriver_path)
 
         # Create WebDriver instance
         driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
@@ -126,4 +119,4 @@ def home():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
