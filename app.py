@@ -41,13 +41,13 @@ def generate_output():
 
         # Set up Chrome options
         chrome_options = ChromeOptions()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--headless")  # Run in headless mode
+        chrome_options.add_argument("--disable-gpu")  # Disable GPU usage
+        chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+        chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
 
-        # Set up Chrome service
-        chrome_service = ChromeService()  # Assumes chromedriver is in PATH
+        # Set up Chrome service (ChromeDriver is in PATH)
+        chrome_service = ChromeService()
 
         # Create WebDriver instance
         driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
