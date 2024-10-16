@@ -12,10 +12,15 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 import os
+import logging
 
 from utility.utility_function import scrape_content, full_screenshot_with_scroll, get_farthest_points, map_to_value
 
 app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route('/generate_output', methods=['POST'])
 def generate_output():
@@ -32,7 +37,7 @@ def generate_output():
         # Generate the URL
         base_url = "https://www.magicwands.jp/calculator/meishiki/"
         url = base_url + f"?birth_y={birth_year}&birth_m={birth_month}&birth_d={birth_day}&birth_h={birth_hour}&gender={gender}"
-        print(url)
+        logger.info(f"Generated URL: {url}")
 
         # Set up Chrome options
         chrome_options = ChromeOptions()
@@ -42,17 +47,16 @@ def generate_output():
         chrome_options.add_argument("--disable-dev-shm-usage")
 
         # Set up Chrome service
-        chromedriver_path = os.path.join(os.getcwd(), 'chromedriver_win32', 'chromedriver.exe')
-        chrome_service = ChromeService(executable_path=chromedriver_path)
+        chrome_service = ChromeService()  # Assumes chromedriver is in PATH
 
         # Create WebDriver instance
         driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
         driver.get(url)
-        
+
         # Example: Capture a full screenshot and process it
         screenshot_path = Path("scrolled_page.png")
         full_screenshot_with_scroll(driver, screenshot_path)
-        
+
         element = driver.find_element(By.XPATH, '/html/body/div[4]/article/div[1]/div[1]/div[2]/div[10]/canvas')
 
         # Get the canvas data as a base64 encoded string
@@ -92,19 +96,19 @@ def generate_output():
         # Generate the result
         五行 = {'五行': {'木': pink_values[0], '火': pink_values[1], '土': pink_values[2], '金': pink_values[3], '水': pink_values[4]}}
         蔵干含む = {'蔵干含む': {'木': purple_values[0], '火': purple_values[1], '土': purple_values[2], '金': purple_values[3], '水': purple_values[4]}}
-       
+
         # Combine the two dictionaries
         result = {**五行, **蔵干含む}
-    
+
     except Exception as e:
         # Log the exception for debugging
-        print(f"Error: {e}")
+        logger.error(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
 
     finally:
         if driver is not None:
             driver.quit()
-        
+
         # Delete the images
         if os.path.exists("scrolled_page.png"):
             os.remove("scrolled_page.png")
